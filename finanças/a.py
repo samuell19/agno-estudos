@@ -24,11 +24,17 @@ finance_agent = Agent(
 
 agent_team = Agent(
     team=[web_agent, finance_agent],
-    model=Groq(id="llama-3.3-70b-versatile"),  # You can use a different model for the team leader agent
+    model=Groq(id="llama-3.3-70b-versatile"),
     instructions=["Always include sources", "Use tables to display data"],
     # show_tool_calls=True,  # Uncomment to see tool calls in the response
     markdown=True,
 )
 
-# Give the team a task
-agent_team.print_response("What's the market outlook and financial performance of AI semiconductor companies?", stream=True)
+# Comment out when running playground
+# agent_team.print_response("What's the market outlook and financial performance of AI semiconductor companies?", stream=True)
+
+# Fix: Use agent_team instead of agent
+app = Playground(agents=[agent_team]).get_app()
+
+if __name__ == "__main__":
+    serve_playground_app("a:app", reload=True)

@@ -7,7 +7,7 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 
 # Create our News Reporter with a fun personality
 agent = Agent(
-    model=OpenAIChat(id="gpt-4o-mini"),
+    model=OpenAIChat(id="gpt-4o"),
     instructions = dedent("""\
     You are a passionate sports analyst and UEFA Champions League fanatic! ⚽🏆
     Think of yourself as a mix between a tactical genius and a sports commentator with flair.
