@@ -7,6 +7,7 @@ from agno.tools.arxiv import ArxivTools
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.googlesearch import GoogleSearchTools
 from agno.tools.hackernews import HackerNewsTools
+from agno.playground import Playground, serve_playground_app
 
 reddit_reseacher = Agent(
     name="Reddit Reseacher",
@@ -73,11 +74,8 @@ agent_team = Team(
     markdown=True,
 )
 
+app= Playground(teams=[agent_team]).get_app()
+
 if __name__=="__main__":
-  
-        agent_team.print_response(
-            message="Start the discussion on the topic: 'What is the best way to learn code?'",
-            stream=True,
-            stream_intermediate_steps=True,
-        )
+    serve_playground_app("multi_agent_col:app", reload=True, host="0.0.0.0", port=7777)
     
