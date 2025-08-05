@@ -1,0 +1,6 @@
+agno[groq]
+groq
+sqlalchemy
+rich
+fastapi
+uvicorn[standard]

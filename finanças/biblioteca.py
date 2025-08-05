@@ -6,7 +6,7 @@ from agno.playground import Playground, serve_playground_app
 import sqlite3
 import os
 
-db_path = "/workspaces/agno-estudos/finanças/biblioteca.db"
+db_path = "biblioteca.db"
 
 class EnhancedSQLTools(SQLTools):
     def schema(self):
@@ -41,4 +41,13 @@ agent = Agent(
 app = Playground(agents=[agent]).get_app()
 
 if __name__ == "__main__":
-    serve_playground_app("biblioteca:app", reload=True)
+    print("🚀 Starting biblioteca playground...")
+    print("📊 Database:", db_path)
+    print("🌐 Playground will be available at http://0.0.0.0:7777")
+    
+    serve_playground_app(
+        app="biblioteca:app", 
+        host="0.0.0.0", 
+        port=7777,
+        reload=False 
+    )
