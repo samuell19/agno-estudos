@@ -1,47 +1,40 @@
-from agno.agent.agent import Agent
+from agno.agent import Agent
+from agno.models.groq import Groq
 from agno.memory.v2.db.sqlite import SqliteMemoryDb
 from agno.memory.v2.memory import Memory
-from agno.models.groq import Groq
-from rich.pretty import pprint
+from agno.storage.sqlite import SqliteStorage
 from agno.playground import Playground, serve_playground_app
 
-memory_db = SqliteMemoryDb(table_name="memory", db_file="tmp/memory.db")
-# No need to set the model, it gets set to the model of the agent
-memory = Memory(db=memory_db, delete_memories=True, clear_memories=True)
 
-# Reset the memory for this example
+
+memory_db= SqliteMemoryDb(
+    table_name="agent_memories",
+    db_file="temp/memory_db",
+)
+
+session_id = "sqlite_memories"
+user_id = "sqlite_user"
+
+memory=Memory(db=memory_db)
+
 memory.clear()
 
-# User ID for the memory
-john_doe_id = "john_doe@example.com"
-agent = Agent(
+session_id="sqlite_memories"
+user_id="sqlite_user"
+
+agent=Agent(
+    name="Agent with memory",
     model=Groq(id="llama-3.3-70b-versatile"),
     memory=memory,
-    # This will trigger the MemoryManager after each user message
+    storage=SqliteStorage(
+        table_name="agent_sessions",
+        db_file="temp/memory.db"
+    ),
     enable_user_memories=True,
+    enable_session_summaries=True,
 )
 
-# Send a message to the agent that would require the memory to be used
-agent.print_response(
-    "My name is John Doe and I like to hike in the mountains on weekends.",
-    stream=True,
-    user_id=john_doe_id,
-)
+app=Playground(agents=[agent]).get_app()
 
-# Send a message to the agent that checks the memory is working
-agent.print_response("What are my hobbies?", stream=True, user_id=john_doe_id)
-
-# Print the memories for the user
-memories = memory.get_user_memories(user_id=john_doe_id)
-print("Memories about John Doe:")
-pprint(memories)
-
-# Send a message to the agent that removes all memories for the user
-agent.print_response(
-    "Remove all existing memories of me.",
-    stream=True,
-    user_id=john_doe_id,
-)
-memories = memory.get_user_memories(user_id=john_doe_id)
-print("Memories about John Doe:")
-pprint(memories)
+if __name__=="__main__":
+    serve_playground_app("agent_memory:app", reload=True)

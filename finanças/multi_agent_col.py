@@ -7,7 +7,18 @@ from agno.tools.arxiv import ArxivTools
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.tools.googlesearch import GoogleSearchTools
 from agno.tools.hackernews import HackerNewsTools
+from agno.memory.v2.memory import Memory
+from agno.memory.v2.db.sqlite import SqliteMemoryDb
+from agno.storage.sqlite import SqliteStorage
 from agno.playground import Playground, serve_playground_app
+
+memory_db = SqliteMemoryDb(
+    table_name="team_memories",
+    db_file="tmp/tmemory.db",
+)
+memory = Memory(db=memory_db)
+memory.clear()
+
 
 reddit_reseacher = Agent(
     name="Reddit Reseacher",
@@ -69,8 +80,15 @@ twitter_reseacher= Agent(
 agent_team = Team(
     name="Discussion Team",
     members=[reddit_reseacher, hackernews_reseacher, twitter_reseacher, academic_paper],
+    memory=memory,
+    storage=SqliteStorage(
+        table_name="team_sessions",
+        db_file="tmp/tmemory.db"
+    ),
     model=Groq(id="llama-3.3-70b-versatile"),
     instructions="You are a discussion master coordinating research from multiple sources.",
+    enable_user_memories=True,
+    add_history_to_messages=True,
     markdown=True,
 )
 
