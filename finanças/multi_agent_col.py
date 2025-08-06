@@ -11,13 +11,21 @@ from agno.memory.v2.memory import Memory
 from agno.memory.v2.db.sqlite import SqliteMemoryDb
 from agno.storage.sqlite import SqliteStorage
 from agno.playground import Playground, serve_playground_app
+import os
+os.makedirs("tmp", exist_ok=True)
 
 memory_db = SqliteMemoryDb(
     table_name="team_memories",
     db_file="tmp/tmemory.db",
 )
-memory = Memory(db=memory_db)
+session_id = "sqlite_memories"
+user_id = "sqlite_user"
+
+memory=Memory(db=memory_db)
+
 memory.clear()
+
+
 
 
 reddit_reseacher = Agent(
@@ -79,6 +87,7 @@ twitter_reseacher= Agent(
 
 agent_team = Team(
     name="Discussion Team",
+    mode='coordinator',
     members=[reddit_reseacher, hackernews_reseacher, twitter_reseacher, academic_paper],
     memory=memory,
     storage=SqliteStorage(
@@ -89,6 +98,7 @@ agent_team = Team(
     instructions="You are a discussion master coordinating research from multiple sources.",
     enable_user_memories=True,
     add_history_to_messages=True,
+    enable_session_summaries=True,
     markdown=True,
 )
 
