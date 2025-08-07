@@ -2,11 +2,26 @@ from agno.agent import Agent
 from agno.models.groq import Groq
 from agno.tools.sql import SQLTools
 from agno.storage.sqlite import SqliteStorage
+from agno.memory.v2.memory import Memory
+from agno.memory.v2.db.sqlite import SqliteMemoryDb
 from agno.playground import Playground, serve_playground_app
 import sqlite3
 import os
 
 db_path = "biblioteca.db"
+
+
+memory_db= SqliteMemoryDb(
+    table_name="memorias",
+    db_file="tempo/memoria.db",
+)
+
+memory=Memory(db=memory_db)
+memory.clear()
+
+session_id="sqlite_memories"
+user_id="funny_user"
+
 
 class EnhancedSQLTools(SQLTools):
     def schema(self):
@@ -22,10 +37,11 @@ class EnhancedSQLTools(SQLTools):
 
 agent = Agent(
     model=Groq(id="llama-3.3-70b-versatile"),
+    memory=memory,
     tools=[EnhancedSQLTools(db_url=f"sqlite:///{db_path}")],
     storage=SqliteStorage(
         table_name="agent_sessions", 
-        db_url="sqlite:///agent_storage.db"
+        db_file="tempo/memoria.db"
     ),
     instructions="""You are a helpful librarian assistant with access to a books database.
     
@@ -34,6 +50,8 @@ agent = Agent(
     - Always provide clear explanations of your results
     - Format results in readable tables when possible""",
     markdown=True,
+    enable_user_memories=True,
+    enable_session_summaries=True,
     add_history_to_messages=True,
     retries=3,
 )
