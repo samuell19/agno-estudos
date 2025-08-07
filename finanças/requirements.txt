@@ -4,3 +4,4 @@ sqlalchemy
 rich
 fastapi
 uvicorn[standard]
+packaging
