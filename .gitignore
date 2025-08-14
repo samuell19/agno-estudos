@@ -214,7 +214,7 @@ docker-compose.override.yml
 # Data files (opcional - dependendo do projeto)
 data/
 datasets/
-*.csv
+
 *.json
 *.xml
 
